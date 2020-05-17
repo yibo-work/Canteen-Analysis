@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.SchoolDao">
+
+    <select id="findById" resultType="com.model.School">
+        select `code`, `name`
+        from school
+        where code = #{code}
+    </select>
+
+    <select id="findByMap" resultType="com.model.School">
+        select `code`,`name` from school
+        <where>
+            <if test="code != null and code != ''">
+                and code = #{code}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+        </where>
+    </select>
+
+    <select id="list" resultType="com.model.School">
+        select `code`,`name` from school
+        <where>
+            <if test="code != null and code != ''">and code =
+                #{code}
+            </if>
+            <if test="name != null and name != ''">and name =
+                #{name}
+            </if>
+        </where>
+    </select>
+
+    <insert id="save" parameterType="com.model.School">
+        insert into school(
+        <trim suffixOverrides=",">
+            <if test="code != null">`code`,</if>
+            <if test="name != null">`name`</if>
+        </trim>
+        )
+        values (
+        <trim suffixOverrides=",">
+            <if test="code != null">#{code},</if>
+            <if test="name != null">#{name}</if>
+        </trim>
+        )
+    </insert>
+
+    <update id="update" parameterType="com.model.School">
+        update school
+        <set>
+            <if test="name != null">`name` = #{name}
+            </if>
+        </set>
+        where code = #{code}
+    </update>
+
+    <delete id="deleteById">
+        delete
+        from school
+        where code = #{code}
+    </delete>
+
+</mapper>

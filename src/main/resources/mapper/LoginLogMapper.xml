@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.LoginLogDao">
+
+    <select id="findById" resultType="com.model.LoginLog">
+        select a.`id`, `user_id`, `create_time`, u.name as user_name
+        from login_log a
+                 left join user u on a.user_id = u.id
+        where a.id = #{id}
+    </select>
+
+    <select id="findByMap" resultType="com.model.LoginLog">
+        select a.`id`, `user_id`, `create_time`, u.name as user_name
+        from login_log a
+        left join user u on a.user_id = u.id
+        <where>
+            <if test="id != null and id != ''">
+                and a.id = #{id}
+            </if>
+            <if test="userId != null and userId != ''">
+                and a.user_id = #{userId}
+            </if>
+            <if test="createTime != null and createTime != ''">
+                and a.create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="list" resultType="com.model.LoginLog">
+        select a.`id`, `user_id`, `create_time`, u.name as user_name
+        from login_log a
+        left join user u on a.user_id = u.id
+        <where>
+            <if test="id != null and id != ''">and a.id =
+                #{id}
+            </if>
+            <if test="userId != null and userId != ''">and user_id =
+                #{userId}
+            </if>
+            <if test="createTime != null and createTime != ''">and create_time =
+                #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <insert id="save" parameterType="com.model.LoginLog" useGeneratedKeys="true" keyProperty="id">
+        insert into login_log(
+        <trim suffixOverrides=",">
+            <if test="userId != null">`user_id`,</if>
+            <if test="createTime != null">`create_time`</if>
+        </trim>
+        )
+        values (
+        <trim suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="createTime != null">#{createTime}</if>
+        </trim>
+        )
+    </insert>
+
+    <update id="update" parameterType="com.model.LoginLog">
+        update login_log
+        <set>
+            <if test="userId != null">`user_id` = #{userId}
+                ,
+            </if>
+            <if test="createTime != null">`create_time` = #{createTime}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete
+        from login_log
+        where id = #{id}
+    </delete>
+
+</mapper>
