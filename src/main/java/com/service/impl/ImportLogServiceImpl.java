@@ -436,4 +436,35 @@ public class ImportLogServiceImpl implements ImportLogService {
     }
 
 
+    /**
+     * 食堂消费分析
+     */
+    public ResultVO analysisCanteen(Map<String, Object> parameters) {
+
+        ResultVO resultVO = new ResultVO();
+
+        if (ObjectUtil.isNotEmpty(parameters.get("station"))) {
+            String station = String.valueOf(parameters.get("station"));
+
+            // 所有的店铺
+            Set<String> stationList = new HashSet<>();
+
+            List<ImportLog> allData = importLogDao.list(new HashMap<>());
+
+            allData.forEach(importLog -> {
+                String station1 = importLog.getStation();
+                stationList.add(station1);
+            });
+
+            Map<String, Integer> stationMap = new HashMap<>();
+
+            List<ImportLog> canteenData = importLogDao.list(parameters);
+
+
+        }
+
+
+        return resultVO;
+    }
+
 }
