@@ -170,65 +170,6 @@ public class ImportLogServiceImpl implements ImportLogService {
 
         Map<String, Object> resultMap = new HashMap<>(8);
 
-        //获取学生个人分析数据
-        HashMap<String, Object> studentNoMap = new HashMap<>(4);
-        studentNoMap.put("studentNo", parameters.get("studentNo"));
-        studentNoMap.put("createTime", parameters.get("createTime"));
-
-        if (ObjectUtil.isNotEmpty(parameters.get("studentNo"))) {
-            List<ImportLog> studentNoData = importLogDao.list(studentNoMap);
-            resultMap.put("studentNoData", studentNoData);
-            if (!studentNoData.isEmpty()) {
-                //学生个人分析
-                Map<String, Object> studentNoAnalysis = analysisDataByImportList(studentNoData);
-                resultMap.put("studentNoAnalysis", studentNoAnalysis);
-            }
-        }
-
-        //获取性别分析数据
-        HashMap<String, Object> sexMap = new HashMap<>(4);
-        sexMap.put("sex", parameters.get("sex"));
-        sexMap.put("createTime", parameters.get("createTime"));
-
-        if (ObjectUtil.isNotEmpty(parameters.get("sex"))) {
-            List<ImportLog> sexData = importLogDao.list(sexMap);
-            if (!sexData.isEmpty()) {
-                //性别分析
-                Map<String, Object> sexAnalysis = analysisDataByImportList(sexData);
-                resultMap.put("sexAnalysis", sexAnalysis);
-
-            }
-        }
-
-        //获取学校分析数据
-        HashMap<String, Object> schoolCodeMap = new HashMap<>(4);
-        schoolCodeMap.put("schoolCode", parameters.get("schoolCode"));
-        schoolCodeMap.put("createTime", parameters.get("createTime"));
-        if (ObjectUtil.isNotEmpty(parameters.get("schoolCode"))) {
-            List<ImportLog> schoolCodeData = importLogDao.list(schoolCodeMap);
-            if (!schoolCodeData.isEmpty()) {
-                //学校分析
-                Map<String, Object> schoolCodeAnalysis = analysisDataByImportList(schoolCodeData);
-                resultMap.put("schoolCodeAnalysis", schoolCodeAnalysis);
-
-            }
-        }
-
-        //获取年级分析数据
-        HashMap<String, Object> gradeMap = new HashMap<>(4);
-        gradeMap.put("grade", parameters.get("grade"));
-        gradeMap.put("createTime", parameters.get("createTime"));
-
-        if (ObjectUtil.isNotEmpty(parameters.get("grade"))) {
-            List<ImportLog> gradeData = importLogDao.list(gradeMap);
-            if (!gradeData.isEmpty()) {
-                //年级分析
-                Map<String, Object> gradeAnalysis = analysisDataByImportList(gradeData);
-                resultMap.put("gradeAnalysis", gradeAnalysis);
-
-            }
-        }
-
         //获取综合分析数据
         HashMap<String, Object> commonMap = new HashMap<>(4);
         commonMap.put("createTime", parameters.get("createTime"));
@@ -239,7 +180,73 @@ public class ImportLogServiceImpl implements ImportLogService {
             Map<String, Object> commonAnalysis = analysisDataByImportList(commonData);
             resultMap.put("commonAnalysis", commonAnalysis);
 
+            //获取学生个人分析数据
+            HashMap<String, Object> studentNoMap = new HashMap<>(4);
+            studentNoMap.put("studentNo", parameters.get("studentNo"));
+            studentNoMap.put("createTime", parameters.get("createTime"));
+
+            if (ObjectUtil.isNotEmpty(parameters.get("studentNo"))) {
+                List<ImportLog> studentNoData = importLogDao.list(studentNoMap);
+                resultMap.put("studentNoData", studentNoData);
+                if (!studentNoData.isEmpty()) {
+                    //学生个人分析
+                    Map<String, Object> studentNoAnalysis = analysisDataByImportList(studentNoData);
+                    Map<String, Object> studentMap = analysisStudentData(studentNoData);
+                    studentNoAnalysis.put("situationList", studentMap.get("situationList"));
+                    resultMap.put("studentNoAnalysis", studentNoAnalysis);
+
+                    //学生个人消费水平
+
+
+                }
+            }
+
+            //获取性别分析数据
+            HashMap<String, Object> sexMap = new HashMap<>(4);
+            sexMap.put("sex", parameters.get("sex"));
+            sexMap.put("createTime", parameters.get("createTime"));
+
+            if (ObjectUtil.isNotEmpty(parameters.get("sex"))) {
+                List<ImportLog> sexData = importLogDao.list(sexMap);
+                if (!sexData.isEmpty()) {
+                    //性别分析
+                    Map<String, Object> sexAnalysis = analysisDataByImportList(sexData);
+                    resultMap.put("sexAnalysis", sexAnalysis);
+
+                }
+            }
+
+            //获取学校分析数据
+            HashMap<String, Object> schoolCodeMap = new HashMap<>(4);
+            schoolCodeMap.put("schoolCode", parameters.get("schoolCode"));
+            schoolCodeMap.put("createTime", parameters.get("createTime"));
+            if (ObjectUtil.isNotEmpty(parameters.get("schoolCode"))) {
+                List<ImportLog> schoolCodeData = importLogDao.list(schoolCodeMap);
+                if (!schoolCodeData.isEmpty()) {
+                    //学校分析
+                    Map<String, Object> schoolCodeAnalysis = analysisDataByImportList(schoolCodeData);
+                    resultMap.put("schoolCodeAnalysis", schoolCodeAnalysis);
+
+                }
+            }
+
+            //获取年级分析数据
+            HashMap<String, Object> gradeMap = new HashMap<>(4);
+            gradeMap.put("grade", parameters.get("grade"));
+            gradeMap.put("createTime", parameters.get("createTime"));
+
+            if (ObjectUtil.isNotEmpty(parameters.get("grade"))) {
+                List<ImportLog> gradeData = importLogDao.list(gradeMap);
+                if (!gradeData.isEmpty()) {
+                    //年级分析
+                    Map<String, Object> gradeAnalysis = analysisDataByImportList(gradeData);
+                    resultMap.put("gradeAnalysis", gradeAnalysis);
+
+                }
+            }
+
         }
+
         return ResultVOUtil.success(resultMap);
     }
 
@@ -267,20 +274,30 @@ public class ImportLogServiceImpl implements ImportLogService {
         //相差天数
         long betweenDay = DateUtil.between(startDate, endDate, DateUnit.DAY);
 
+        //计算时间包含多少自然月
+        Set<Integer> monthSet = new HashSet<>();
+        importLogList.forEach(importLog -> {
+            int month = DateUtil.month(importLog.getTime());
+            monthSet.add(month);
+        });
+
+        int monthNum = monthSet.size();
+
         //日均消费额
         String dayUse = String.format("%.2f", sumMoney / betweenDay);
         resultMap.put("dayUse", dayUse);
 
-        double dayUseNum = (double) nums / betweenDay;
+        // 月均消费额
+        String monthUse = String.format("%.2f", sumMoney / monthNum);
+        resultMap.put("monthUse", monthUse);
+
         // 每日消费频率
-        String dayFrequency = String.format("%.2f", dayUseNum);
-        //每周消费频率
-        String weekFrequency = String.format("%.2f", dayUseNum * 7);
+        String dayFrequency = String.format("%.2f", (double) nums / betweenDay);
+
         //每月消费频率
-        String monthFrequency = String.format("%.2f", dayUseNum * 30);
+        String monthFrequency = String.format("%.2f", (double) nums / monthNum);
 
         resultMap.put("dayFrequency", dayFrequency);
-        resultMap.put("weekFrequency", weekFrequency);
         resultMap.put("monthFrequency", monthFrequency);
 
         //消费地点偏好
@@ -400,4 +417,23 @@ public class ImportLogServiceImpl implements ImportLogService {
 
         return resultMap;
     }
+
+    /**
+     * 分析学生个人消费情况
+     */
+    private Map<String, Object> analysisStudentData(List<ImportLog> studentList) {
+        Map<String, Object> resultMap = new HashMap<>();
+        //学生消费的最后一天
+        Date endTime = studentList.get(studentList.size() - 1).getTime();
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("endTime", DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
+        List<ImportLog> situationList = importLogDao.list(paramMap);
+
+        resultMap.put("situationList", situationList);
+
+        return resultMap;
+    }
+
+
 }

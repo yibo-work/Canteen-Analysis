@@ -23,6 +23,11 @@
         <input class="layui-input" lay-verify="required" name="password" placeholder="密码" type="password">
         <hr class="hr15">
         <input lay-filter="login" lay-submit onclick="login()" style="width:100%;" type="submit" value="登录">
+        <hr class="hr15">
+        <select name="roleId">
+            <option value="1">教师</option>
+            <option value="2">管理员</option>
+        </select>
     </form>
 </div>
 
@@ -34,6 +39,7 @@
         var user = {};
         user.userNo = $("[name=userNo]").val().trim();
         user.password = $("[name=password]").val().trim();
+        user.roleId = $("[name=roleId]").val().trim();
 
         $.ajax('/user/login', {
             data: JSON.stringify(user),

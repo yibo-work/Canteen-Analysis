@@ -42,6 +42,7 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         map.put("userNo", loginUser.getUserNo());
         map.put("password", loginUser.getPassword());
+        map.put("roleId", loginUser.getRoleId());
         User user = userService.findByMap(map);
         if (user != null) {
             LoginLog loginLog = new LoginLog();

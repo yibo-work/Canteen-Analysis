@@ -80,6 +80,11 @@
             <if test="grade != null and grade != ''">and left(student_no, 4) =
                 #{grade}
             </if>
+            <if test="endTime != null and endTime != ''">
+                and DATE_SUB(DATE(#{endTime}), INTERVAL 7 DAY) &lt;= date(`time`)
+                <!--                and (DATE(time) between DATE(#{startTime}) and DATE(#{endTime}))-->
+            </if>
+
         </where>
         order by time
     </select>
