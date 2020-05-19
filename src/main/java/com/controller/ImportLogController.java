@@ -134,4 +134,19 @@ public class ImportLogController {
 
     }
 
+    /**
+     * 分析食堂消费数据
+     */
+    @GetMapping("/getAnalysisCanteen")
+    public ResultVO analysisCanteen() {
+        try {
+            return importLogService.analysisCanteen(new RequestParamsUtil().getParameters());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.err.println(ex.getMessage());
+            return ResultVOUtil.failure("数据分析异常！");
+        }
+
+    }
+
 }

@@ -439,30 +439,85 @@ public class ImportLogServiceImpl implements ImportLogService {
     /**
      * 食堂消费分析
      */
+    @Override
     public ResultVO analysisCanteen(Map<String, Object> parameters) {
 
         ResultVO resultVO = new ResultVO();
 
         if (ObjectUtil.isNotEmpty(parameters.get("station"))) {
-            String station = String.valueOf(parameters.get("station"));
-
-            // 所有的店铺
-            Set<String> stationList = new HashSet<>();
-
-            List<ImportLog> allData = importLogDao.list(new HashMap<>());
-
-            allData.forEach(importLog -> {
-                String station1 = importLog.getStation();
-                stationList.add(station1);
-            });
-
-            Map<String, Integer> stationMap = new HashMap<>();
 
             List<ImportLog> canteenData = importLogDao.list(parameters);
 
+            if (canteenData.isEmpty()) {
+                return ResultVOUtil.failure("分析失败，没有找到该食堂的消费数据！");
+            }
 
+            String station = String.valueOf(parameters.get("station"));
+
+            List<ImportLog> allData = importLogDao.list(new HashMap<>());
+
+            // 所有的店铺及人次
+            Map<String, Integer> allStationRank = new HashMap<>(allData.size());
+
+            allData.forEach(importLog -> {
+                String station1 = importLog.getStation();
+                Integer value = allStationRank.get(station1);
+                if (allStationRank.get(station1) == null) {
+                    allStationRank.put(station1, 0);
+                } else {
+                    allStationRank.put(station1, value + 1);
+                }
+            });
+
+            //倒序排序
+            List<Map.Entry<String, Integer>> list = new ArrayList<>(allStationRank.entrySet());
+            list.sort((o1, o2) -> {
+                int compare = (o1.getValue()).compareTo(o2.getValue());
+                return -compare;
+            });
+
+            Map<String, Object> stationMap = new HashMap<>();
+            int i = 1;
+            for (Map.Entry<String, Integer> entry : list) {
+
+                if (entry.getKey().equals(station)) {
+                    //消费人次在总店铺的排名
+                    stationMap.put("rankNo", i);
+                }
+                i++;
+            }
+
+
+            int nums = canteenData.size();
+
+            stationMap.put("nums", nums);
+            //消费总额
+            double sumMoney = canteenData.stream().mapToDouble(importLog -> importLog.getMoney().doubleValue()).sum();
+
+            //计算时间包含多少自然月
+            Set<Integer> monthSet = new HashSet<>();
+            canteenData.forEach(importLog -> {
+                int month = DateUtil.month(importLog.getTime());
+                monthSet.add(month);
+            });
+
+            int monthNum = monthSet.size();
+
+            // 月均消费额
+            String monthUse = String.format("%.2f", sumMoney / monthNum);
+            stationMap.put("monthUse", monthUse);
+
+            //人均消费金额
+            String oneUser = String.format("%.2f", sumMoney / nums);
+            stationMap.put("oneUser", oneUser);
+
+            resultVO.setCode(200);
+            resultVO.setMsg("分析成功！");
+            resultVO.setData(stationMap);
+
+        } else {
+            return ResultVOUtil.failure("分析失败，数据为空,请导入数据后再分析！");
         }
-
 
         return resultVO;
     }

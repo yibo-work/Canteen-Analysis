@@ -45,10 +45,26 @@ public class UserController {
         map.put("roleId", loginUser.getRoleId());
         User user = userService.findByMap(map);
         if (user != null) {
+
+            //获取用户登录记录
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("userId", user.getId());
+            List<LoginLog> loginLogList = loginLogService.list(paramMap);
+            if (loginLogList.size() == 10){
+                //删除第一个
+                loginLogService.deleteById(loginLogList.get(0).getId());
+            }
+
+            //再添加
             LoginLog loginLog = new LoginLog();
             loginLog.setUserId(user.getId());
             loginLogService.save(loginLog);
+
             session.setAttribute("USER", user);
+
+            if (loginLogList.size() == 0){
+                return ResultVOUtil.success(user);
+            }
             return ResultVOUtil.success();
         } else {
             return ResultVOUtil.failure(ResultFailureEnum.LOGIN_ERROR);

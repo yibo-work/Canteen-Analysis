@@ -1,6 +1,5 @@
 package com.controller;
 
-import com.model.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,6 +71,11 @@ public class PageController {
     @GetMapping("/editMine")
     public String editMine() {
         return "editMine";
+    }
+
+    @GetMapping("/editPassword")
+    public String editPassword() {
+        return "editPassword";
     }
 
     @GetMapping("/loginLogManage")

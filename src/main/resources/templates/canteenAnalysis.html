@@ -2,7 +2,7 @@
 <html class="x-admin-sm" lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>食堂消费分析</title>
+    <title>学生消费分析</title>
     <meta content="webkit" name="renderer">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" name="viewport"/>
@@ -13,7 +13,6 @@
     <script charset="utf-8" th:src="@{/js/xadmin.js}" type="text/javascript"></script>
     <script charset="utf-8" th:src="@{/js/vue.js}" type="text/javascript"></script>
 </head>
-
 <body>
 <div class="x-nav">
             <span class="layui-breadcrumb">
@@ -24,236 +23,374 @@
         <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
     </a>
 </div>
-<div class="layui-fluid">
+<div class="layui-fluid" id="vmCanteenData">
     <div class="layui-row layui-col-space15">
-        <div class="layui-col-md12" id="vmImportLog">
+        <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-body">
-                    <form class="layui-form layui-col-space5">
+                    <form class="layui-form layui-col-space5" onsubmit="return false;">
                         <div class="layui-input-inline layui-show-xs-block">
-                            <input class="layui-input" id="start" name="student" placeholder="请输入学号">
+                            <input class="layui-input" id="station" name="station" placeholder="请输入食堂编号">
                         </div>
                         <div class="layui-input-inline layui-show-xs-block">
-                            <select name="sex">
-                                <option value="">性别</option>
-                                <option value="男">男</option>
-                                <option value="女">女</option>
-                            </select>
-                        </div>
-                        <div class="layui-input-inline layui-show-xs-block">
-                            <select name="schoolCode">
-                                <option value="">学院</option>
-                                <option :value="school.code" v-for="school,i in schoolList">{{school.name}}</option>
-                                <!--<option value="01">外国语学院</option>
-                                <option value="02">艺术学院</option>
-                                <option value="03">体育学院</option>
-                                <option value="04">美视电影学院</option>
-                                <option value="05">国际学院</option>
-                                <option value="06">弘深学院</option>
-                                <option value="07">博雅学院</option>
-                                <option value="08">公共管理学院</option>
-                                <option value="09">经济与工商管理学院</option>
-                                <option value="10">新闻学院</option>
-                                <option value="11">法学院</option>
-                                <option value="12">马克思主义学院</option>
-                                <option value="13">数学与统计学院</option>
-                                <option value="14">物理学院</option>
-                                <option value="15">化学化工学院</option>
-                                <option value="16">生命科学学院</option>
-                                <option value="17">机械工程学院</option>
-                                <option value="18">电气工程学院</option>
-                                <option value="19">能源与动力工程学院</option>
-                                <option value="20">资源与安全学院</option>
-                                <option value="21">材料科学与工程学院</option>
-                                <option value="22">航空航天学院</option>
-                                <option value="23">汽车工程学院</option>
-                                <option value="24">建筑城规学院</option>
-                                <option value="25">土木工程学院</option>
-                                <option value="26">环境与生态学院</option>
-                                <option value="27">管理科学与房地产学院</option>
-                                <option value="28">光电工程学院</option>
-                                <option value="29">微电子与通信工程学院</option>
-                                <option value="30">计算机学院</option>
-                                <option value="31">自动化学院</option>
-                                <option value="32">大数据与软件学院</option>
-                                <option value="33">药学院</option>
-                                <option value="34">生物工程学院</option>-->
-                            </select>
-                        </div>
-                        <div class="layui-input-inline layui-show-xs-block">
-                            <select name="schoolCode">
-                                <option value="">年级</option>
-                                <option value="2015">2015</option>
-                                <option value="2016">2016</option>
-                                <option value="2017">2017</option>
-                                <option value="2018">2018</option>
-                                <option value="2019">2019</option>
-                                <option value="2020">2020</option>
-                            </select>
-                        </div>
-                        <div class="layui-input-inline layui-show-xs-block">
-                            <select name="schoolCode">
-                                <option value="">导入时间</option>
-                                <option :value="importTime"
-                                        v-for="importTime,i in importTimeList">{{importTime}}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="layui-input-inline layui-show-xs-block">
-                            <button class="layui-btn" lay-filter="sreach" lay-submit="">
+                            <button @click="analysis()" class="layui-btn" lay-filter="search" lay-submit="">
                                 <i class="layui-icon layui-icon-chart"></i>分析数据
+                            </button>
+                            <button class="layui-btn" id="uploadData">
+                                <i class="layui-icon"></i>导入消费数据
                             </button>
                         </div>
                     </form>
                 </div>
                 <div class="layui-card-header">
-                    <button class="layui-btn" id="uploadData">
-                        <i class="layui-icon"></i>导入消费数据
-                    </button>
+                    <div id="canteenAnalysisParam"></div>
                 </div>
             </div>
         </div>
     </div>
     <div class="layui-col-md12">
-        <div class="layui-card">
-            <div class="layui-card-header">数据统计</div>
-            <div class="layui-card-body ">
-                <ul class="layui-row layui-col-space10 layui-this x-admin-carousel x-admin-backlog">
-                    <li class="layui-col-md2 layui-col-xs6">
+        <div class="layui-card" v-if="!showCanteenEmpty && canteenAnalysis.nums">
+            <div class="layui-card-header">食堂分析</div>
+            <div class="layui-card-body">
+                <ul class="layui-row layui-col-space15 layui-this x-admin-carousel x-admin-backlog">
+                    <li class="layui-col-md6 layui-col-xs6">
                         <a class="x-admin-backlog-body" href="javascript:">
-                            <h3>文章数</h3>
+                            <h3>人次</h3>
                             <p>
-                                <cite>66</cite></p>
+                                <cite v-text="canteenAnalysis.nums"></cite>
+                            </p>
                         </a>
                     </li>
-                    <li class="layui-col-md2 layui-col-xs6">
+                    <li class="layui-col-md6 layui-col-xs6">
                         <a class="x-admin-backlog-body" href="javascript:">
-                            <h3>会员数</h3>
+                            <h3>月均消费额</h3>
                             <p>
-                                <cite>12</cite></p>
+                                <cite v-text="canteenAnalysis.monthUse"></cite>
+                            </p>
                         </a>
                     </li>
-                    <li class="layui-col-md2 layui-col-xs6">
+                    <li class="layui-col-md6 layui-col-xs6">
                         <a class="x-admin-backlog-body" href="javascript:">
-                            <h3>回复数</h3>
+                            <h3>人均消费额</h3>
                             <p>
-                                <cite>99</cite></p>
+                                <cite v-text="canteenAnalysis.oneUser"></cite>
+                            </p>
                         </a>
                     </li>
-                    <li class="layui-col-md2 layui-col-xs6">
+                    <li class="layui-col-md6 layui-col-xs6">
                         <a class="x-admin-backlog-body" href="javascript:">
-                            <h3>商品数</h3>
+                            <h3>消费人次排名</h3>
                             <p>
-                                <cite>67</cite></p>
-                        </a>
-                    </li>
-                    <li class="layui-col-md2 layui-col-xs6">
-                        <a class="x-admin-backlog-body" href="javascript:">
-                            <h3>文章数</h3>
-                            <p>
-                                <cite>67</cite></p>
-                        </a>
-                    </li>
-                    <li class="layui-col-md2 layui-col-xs6 ">
-                        <a class="x-admin-backlog-body" href="javascript:">
-                            <h3>文章数</h3>
-                            <p>
-                                <cite>6766</cite></p>
+                                <cite v-text="canteenAnalysis.rankNo"></cite>
+                            </p>
                         </a>
                     </li>
                 </ul>
             </div>
         </div>
-        <div class="layui-card">
-            <div class="layui-card-header">数据统计</div>
-            <div class="layui-card-body ">
-                <ul class="layui-row layui-col-space10 layui-this x-admin-carousel x-admin-backlog">
-                    <li class="layui-col-md2 layui-col-xs6">
-                        <a class="x-admin-backlog-body" href="javascript:">
-                            <h3>文章数</h3>
-                            <p>
-                                <cite>66</cite></p>
-                        </a>
-                    </li>
-                    <li class="layui-col-md2 layui-col-xs6">
-                        <a class="x-admin-backlog-body" href="javascript:">
-                            <h3>会员数</h3>
-                            <p>
-                                <cite>12</cite></p>
-                        </a>
-                    </li>
-                    <li class="layui-col-md2 layui-col-xs6">
-                        <a class="x-admin-backlog-body" href="javascript:">
-                            <h3>回复数</h3>
-                            <p>
-                                <cite>99</cite></p>
-                        </a>
-                    </li>
-                    <li class="layui-col-md2 layui-col-xs6">
-                        <a class="x-admin-backlog-body" href="javascript:">
-                            <h3>商品数</h3>
-                            <p>
-                                <cite>67</cite></p>
-                        </a>
-                    </li>
-                    <li class="layui-col-md2 layui-col-xs6">
-                        <a class="x-admin-backlog-body" href="javascript:">
-                            <h3>文章数</h3>
-                            <p>
-                                <cite>67</cite></p>
-                        </a>
-                    </li>
-                    <li class="layui-col-md2 layui-col-xs6 ">
-                        <a class="x-admin-backlog-body" href="javascript:">
-                            <h3>文章数</h3>
-                            <p>
-                                <cite>6766</cite></p>
-                        </a>
-                    </li>
-                </ul>
+        <div class="layui-card" v-if="showCanteenEmpty">
+            <div class="layui-card-header">食堂消费分析</div>
+            <div class="layui-card-body" style="font-size: 18px;color: #FFB800">
+                无该食堂消费数据!
             </div>
         </div>
     </div>
 </div>
 </body>
+<script charset="utf-8" th:src="@{/js/echarts.js}" type="text/javascript"></script>
 <script type="text/javascript">
 
-    vm = new Vue({
-        el: "#vmImportLog",
+    var vm = new Vue({
+        el: "#vmCanteenData",
         data: {
-            schoolList: [],
-            importTimeList: []
+            canteenAnalysis: {},
+            showCanteenEmpty: false
         },
         created: function () {
-            var _this = this;
-            $.ajax({
-                url: "/school/list",
-                dataType: "json",
-                type: "get",
-                success: function (result) {
-                    if (result.code === 200) {
-                        _this.schoolList = result.data;
-                    } else {
-                        layer.alert("获取所有学院信息失败！");
+            /* var _this = this;
+
+             $.ajax({
+                 url: "/importLog/getAnalysisCanteen",
+                 data: {
+                     station: $("[name=station]").val().trim()
+                 },
+                 dataType: "json",
+                 type: "get",
+                 success: function (result) {
+                     if (result.code === 200) {
+                         _this.canteenAnalysis = result.data;
+
+                         if (!canteenAnalysis && $("[name=station]").val().trim().length > 0) {
+                             _this.showCanteenEmpty = true;
+                         }
+
+                     } else {
+                         layer.msg("初始加载失败！", {icon: 2});
+                     }
+
+                 }
+             });*/
+
+        }, methods: {
+            /**
+             * 执行分析
+             */
+            analysis: function () {
+                var loading = layer.load();
+                var _this = this;
+
+                var station = $("[name=station]").val().trim();
+
+                $.ajax({
+                    url: "/importLog/getAnalysisCanteen",
+                    data: {
+                        station: station
+                    },
+                    dataType: "json",
+                    type: "get",
+                    success: function (result) {
+                        layer.close(loading);
+                        console.info(result.data);
+
+                        if (result.code === 200) {
+
+                            //填充分析数据
+                            var param = '分析数据条件：';
+
+                            if (station.length > 0) {
+                                param += '食堂编号=' + station;
+                            }
+                            $("#canteenAnalysisParam").text(param);
+                            _this.showCanteenEmpty = false;
+                            _this.canteenAnalysis = result.data;
+
+                        } else {
+                            _this.showCanteenEmpty = true;
+                            layer.msg(result.msg, {icon: 2});
+                        }
                     }
-                }
-            });
-            $.ajax({
-                url: "/importLog/getImportTime",
-                dataType: "json",
-                type: "get",
-                success: function (result) {
-                    if (result.code === 200) {
-                        _this.importTimeList = result.data;
-                    } else {
-                        layer.alert("获取所有导入时间失败！");
+                });
+
+            }
+            ,
+            /**
+             * 初始化消费地点echarts图
+             * @param analysisData 分析数据
+             * @param elementName 元素名
+             */
+            initStation: function (analysisData, elementName) {
+                // 基于准备好的dom，初始化echarts实例
+
+                $(function () {
+                    var stationChart = echarts.init(document.getElementById(elementName + '_station'));
+
+                    var seriesDataArray = [];
+
+                    // 指定图表的配置项和数据
+                    var stationPreference = analysisData.stationPreference;
+
+                    var legendList = [];
+
+                    for (var station in stationPreference) {
+
+                        var seriesData = {};
+                        seriesData.value = stationPreference[station];
+                        seriesData.name = station;
+                        if (seriesData.value > 0) {
+                            legendList.push(station);
+                            seriesDataArray.push(seriesData);
+                        }
                     }
-                }
-            });
+
+                    var subtext = '';
+                    if (legendList.length < 10) {
+                        subtext = '学生饮食消费地点集中，请加强关注了解相应情况';
+                    } else {
+                        subtext = '学生饮食消费地点情况正常';
+                    }
+
+                    var stationOption = {
+                        title: {
+                            text: '消费地点偏好',
+                            subtext: subtext,
+                            left: 'center'
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: '{a} <br/>{b} : {c} ({d}%)'
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'left',
+                            data: legendList
+                        },
+                        series: [
+                            {
+                                name: '食堂编号',
+                                type: 'pie',
+                                radius: '55%',
+                                center: ['50%', '50%'],
+                                data: seriesDataArray,
+                                emphasis: {
+                                    itemStyle: {
+                                        shadowBlur: 10,
+                                        shadowOffsetX: 0,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                }
+                            }
+                        ]
+                    };
+
+                    // 使用刚指定的配置项和数据显示图表。
+                    stationChart.setOption(stationOption, true);
+                });
+
+            }
+            ,
+            /**
+             * 初始化消费时间echarts图
+             * @param analysisData 分析数据
+             * @param elementName 元素名
+             */
+            initTime: function (analysisData, elementName) {
+                $(function () {
+                    // 基于准备好的dom，初始化echarts实例
+                    var timeChart = echarts.init(document.getElementById(elementName + '_time'));
+
+                    var seriesDataArray = [];
+
+                    // 指定图表的配置项和数据
+                    var timePreference = analysisData.timePreference;
+
+                    var legendList = [];
+
+                    for (var time in timePreference) {
+                        var seriesData = {};
+                        seriesData.value = timePreference[time];
+                        seriesData.name = time;
+                        if (seriesData.value > 0) {
+                            legendList.push(time);
+                            seriesDataArray.push(seriesData);
+                        }
+                    }
+
+                    var subtext = '';
+                    if (legendList.length > 4) {
+                        subtext = '学生饮食时间分散，饮食有不规律倾向，请及时关注情况';
+                    } else {
+                        subtext = '学生饮食情况基本规律，无异常倾向';
+                    }
+
+                    // 指定图表的配置项和数据
+                    var timeOption = {
+                        title: {
+                            text: '消费时间偏好',
+                            subtext: subtext,
+                            left: 'center'
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: '{a} <br/>{b} : {c} ({d}%)'
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'left',
+                            data: legendList
+                        },
+                        series: [
+                            {
+                                name: '消费时间段',
+                                type: 'pie',
+                                radius: '55%',
+                                center: ['50%', '50%'],
+                                data: seriesDataArray,
+                                emphasis: {
+                                    itemStyle: {
+                                        shadowBlur: 10,
+                                        shadowOffsetX: 0,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                }
+                            }
+                        ]
+                    };
+
+                    // 使用刚指定的配置项和数据显示图表。
+                    timeChart.setOption(timeOption, true);
+                });
+            }
+            ,
+            /**
+             * 初始化消费情况echarts图
+             * @param analysisData 分析数据
+             */
+            initSituation: function (analysisData) {
+                $(function () {
+
+                    // 基于准备好的dom，初始化echarts实例
+                    var situationChart = echarts.init(document.getElementById('station_situation'));
+
+                    // 指定图表的配置项和数据
+                    var situationList = analysisData.situationList;
+
+                    var nameData = [];
+                    var valueData = [];
+
+                    $(situationList).each(function () {
+                        if (this.money > 0) {
+                            nameData.push(this.time);
+                            valueData.push(this.money);
+                        }
+                    });
+
+                    // 指定图表的配置项和数据
+                    var situationOption = {
+                        title: {
+                            text: '最近一周消费情况'
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross',
+                                label: {
+                                    backgroundColor: '#6a7985'
+                                }
+                            }
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: nameData
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [{
+                            data: valueData,
+                            type: 'line'
+                        }]
+                    };
+
+
+                    // 使用刚指定的配置项和数据显示图表。
+                    situationChart.setOption(situationOption, true);
+
+                });
+            }
+            ,
+            /**
+             * 初始化消费地点echarts图
+             * @param analysisData 分析数据
+             */
+            initLevel: function (analysisData) {
+                $(function () {
+
+                });
+            }
         }
     });
 
-    layui.use(['form', 'upload'], function () {
+    layui.use(['form', 'upload', 'layer'], function () {
 
         var upload = layui.upload;
         // 文件上传实例
@@ -297,6 +434,7 @@
             }
         });
     });
+
 
 </script>
 </html>

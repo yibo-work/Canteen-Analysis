@@ -68,4 +68,9 @@ public interface ImportLogService {
      */
     ResultVO getAnalysisData(Map<String, Object> parameters);
 
+    /**
+     * 分析食堂
+     */
+    ResultVO analysisCanteen(Map<String, Object> parameters);
+
 }

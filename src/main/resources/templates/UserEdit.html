@@ -38,18 +38,6 @@
                                v-model="user.name"></div>
                 </div>
             </div>
-
-            <div class="layui-form-item">
-                <label class="layui-form-label" for="password">
-                    <span class="x-red">*</span>密码
-                </label>
-                <div class="layui-input-block">
-                    <div class="layui-input-inline layui-show-xs-block">
-                        <input class="layui-input" id="password" lay-verify="password" name="password" type="text"
-                               v-model="user.password"></div>
-                </div>
-            </div>
-
             <div class="layui-form-item">
                 <label class="layui-form-label" for="phone">
                     电话
@@ -71,7 +59,20 @@
                                v-model="user.email"></div>
                 </div>
             </div>
-
+            <div class="layui-form-item">
+                <label class="layui-form-label" for="email">
+                    验证码
+                </label>
+                <div class="layui-input-block">
+                    <div class="layui-input-inline layui-show-xs-block" style="width: 100px">
+                        <input class="layui-input" id="msg" name="msg"
+                               type="text">
+                    </div>
+                    <div class="layui-input-inline layui-show-xs-block" style="width: 90px">
+                        <input class="layui-btn" lay-filter="getMsg" type="button" value="获取验证码"/>
+                    </div>
+                </div>
+            </div>
             <div class="layui-form-item">
                 <label class="layui-form-label" for="roleId">
                     <span class="x-red">*</span>角色
