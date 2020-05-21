@@ -30,7 +30,7 @@
             <div class="layui-card">
 
                 <div class="layui-card-header">
-                    <button class="layui-btn" onclick="xadmin.open('添加用户','/userAdd',600,700)">
+                    <button class="layui-btn" onclick="xadmin.open('添加用户','/userAdd',600,500)">
                         <i class="layui-icon"></i>添加用户
                     </button>
                     <button class="layui-btn" id="uploadUser">
@@ -56,7 +56,8 @@
                             <td v-text="i+1"></td>
                             <td v-text="user.userNo"></td>
                             <td v-text="user.name"></td>
-                            <td v-text="user.password"></td>
+                            <td v-if="user.password == '000000'">000000</td>
+                            <td v-else>******</td>
                             <td v-text="user.phone"></td>
                             <td v-text="user.email"></td>
                             <td v-if="user.roleId == 1">管理员</td>
@@ -65,11 +66,13 @@
                                 <button @click="editUser(user.id)"
                                         class="layui-btn layui-btn-warm"
                                         id="editUser"
-                                        onclick="xadmin.open('编辑用户','/userEdit',600,700)">
+                                        onclick="xadmin.open('编辑用户','/userEdit',600,500)"
+                                        v-if="user.userNo !== 'admin'">
                                     <i class="layui-icon">&#xe631;</i>编辑
                                 </button>
                                 <button @click="resetPassword(user.id)"
-                                        class="layui-btn">
+                                        class="layui-btn"
+                                        v-if="user.userNo !== 'admin'">
                                     <i class="layui-icon layui-icon-set"></i>重置密码
                                 </button>
                                 <button @click="loginLogManage(user.id)"
@@ -79,7 +82,8 @@
                                 </button>
                                 <button @click="delUser(user.id)"
                                         class="layui-btn layui-btn-danger"
-                                        id="delUser">
+                                        id="delUser"
+                                        v-if="user.userNo !== 'admin'">
                                     <i class="layui-icon">&#xe640;</i>删除
                                 </button>
                             </td>
@@ -117,7 +121,9 @@
     </div>
 </div>
 </body>
-<script type="text/javascript">
+<script th:inline="javascript" type="text/javascript">
+
+    var sessionUser = [[${session.USER}]];
 
     layui.use(['form', 'upload'], function () {
 
@@ -213,6 +219,12 @@
              * 重置密码
              */
             resetPassword: function (id) {
+
+                if (sessionUser.id === id) {
+                    layer.alert("不能重置自己的密码！");
+                    return false;
+                }
+
                 layer.confirm('确认要重置密码吗？',
                     function () {
                         var user = {};

@@ -102,6 +102,9 @@
                             <button @click="analysis()" class="layui-btn" lay-filter="search" lay-submit="">
                                 <i class="layui-icon layui-icon-chart"></i>分析数据
                             </button>
+                            <button class="layui-btn" type="reset">
+                                <i class="layui-icon layui-icon-refresh"></i>重置
+                            </button>
                             <button class="layui-btn" id="uploadData">
                                 <i class="layui-icon"></i>导入消费数据
                             </button>
@@ -247,7 +250,7 @@
                 无该生消费数据!
             </div>
         </div>
-        <div class="layui-card" v-if="importData.sexAnalysis">
+        <div class="layui-card" v-if="!importData.studentNoAnalysis && !showStudentEmpty && importData.sexAnalysis">
             <div class="layui-card-header">性别分析</div>
             <div class="layui-card-body ">
                 <ul class="layui-row layui-col-space15 layui-this x-admin-carousel x-admin-backlog">
@@ -365,7 +368,8 @@
                 </div>
             </div>
         </div>
-        <div class="layui-card" v-if="importData.schoolCodeAnalysis">
+        <div class="layui-card"
+             v-if="!importData.studentNoAnalysis && !showStudentEmpty && importData.schoolCodeAnalysis">
             <div class="layui-card-header">学院分析</div>
             <div class="layui-card-body ">
                 <ul class="layui-row layui-col-space15 layui-this x-admin-carousel x-admin-backlog">
@@ -483,7 +487,7 @@
                 </div>
             </div>
         </div>
-        <div class="layui-card" v-if="importData.gradeAnalysis">
+        <div class="layui-card" v-if="!importData.studentNoAnalysis && !showStudentEmpty && importData.gradeAnalysis">
             <div class="layui-card-header">年级分析</div>
             <div class="layui-card-body ">
                 <ul class="layui-row layui-col-space15 layui-this x-admin-carousel x-admin-backlog">
@@ -601,7 +605,7 @@
                 </div>
             </div>
         </div>
-        <div class="layui-card" v-if="importData.commonAnalysis">
+        <div class="layui-card" v-if="!importData.studentNoAnalysis && !showStudentEmpty && importData.commonAnalysis">
             <div class="layui-card-header">综合分析</div>
             <div class="layui-card-body ">
                 <ul class="layui-row layui-col-space15 layui-this x-admin-carousel x-admin-backlog">
@@ -793,6 +797,7 @@
                 var studentNo = $("[name=studentNo]").val().trim();
                 var sex = $("[name=sex]").val().trim();
                 var schoolCode = $("[name=schoolCode]").val().trim();
+                var schoolName = $("[name=schoolCode] option:selected").text().trim();
                 var grade = $("[name=grade]").val().trim();
                 var createTime = $("[name=createTime]").val().trim();
 
@@ -818,6 +823,8 @@
 
                             if (studentNo.length > 0) {
                                 param += '学号=' + studentNo + ' 和 ';
+                            } else {
+                                _this.showStudentEmpty = false;
                             }
 
                             if (sex.length > 0) {
@@ -825,6 +832,7 @@
                             }
                             if (schoolCode.length > 0) {
                                 param += '学院编号=' + schoolCode + ' 和 ';
+                                param += '学院名称=' + schoolName + ' 和 ';
                             }
                             if (grade.length > 0) {
                                 param += '年级=' + grade + ' 和 ';

@@ -36,9 +36,6 @@
                             <button @click="analysis()" class="layui-btn" lay-filter="search" lay-submit="">
                                 <i class="layui-icon layui-icon-chart"></i>分析数据
                             </button>
-                            <button class="layui-btn" id="uploadData">
-                                <i class="layui-icon"></i>导入消费数据
-                            </button>
                         </div>
                     </form>
                 </div>
@@ -107,29 +104,6 @@
             showCanteenEmpty: false
         },
         created: function () {
-            /* var _this = this;
-
-             $.ajax({
-                 url: "/importLog/getAnalysisCanteen",
-                 data: {
-                     station: $("[name=station]").val().trim()
-                 },
-                 dataType: "json",
-                 type: "get",
-                 success: function (result) {
-                     if (result.code === 200) {
-                         _this.canteenAnalysis = result.data;
-
-                         if (!canteenAnalysis && $("[name=station]").val().trim().length > 0) {
-                             _this.showCanteenEmpty = true;
-                         }
-
-                     } else {
-                         layer.msg("初始加载失败！", {icon: 2});
-                     }
-
-                 }
-             });*/
 
         }, methods: {
             /**
@@ -392,47 +366,6 @@
 
     layui.use(['form', 'upload', 'layer'], function () {
 
-        var upload = layui.upload;
-        // 文件上传实例
-        var uploadInst = upload.render({
-            elem: '#uploadData' //绑定元素
-            , url: '/importLog/importData' //上传接口
-            , accept: 'file' // 允许上传的文件类型
-            , size: 1024 // 允许上传文件的最大体积,0表示无限制
-            , auto: true //选择文件后自动上传
-            , before: function (obj) {
-                //上传文件前的操作
-                // 显示加载弹窗
-                loading = layer.load();
-            }
-            , done: function (res) {
-                //上传完毕回调
-                if (loading) {
-                    // 关闭加载弹窗
-                    layer.close(loading);
-                }
-                if (res.code == 200) {
-
-                    layer.msg("导入成功！");
-                    //延时操作，增加用户体验
-                    setTimeout(function () {
-                        // 重新加载 页面的表格
-                        location.reload();
-                    }, 800);
-
-                } else {
-                    //请求异常回调
-                    layer.msg(res.msg, {icon: 2});
-                }
-
-            }
-            , error: function () {
-                // 关闭加载弹窗
-                layer.close(loading);
-                //请求异常回调
-                layer.msg('导入消费记录信息失败', {icon: 2});
-            }
-        });
     });
 
 

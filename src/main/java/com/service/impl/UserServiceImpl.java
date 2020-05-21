@@ -110,8 +110,7 @@ public class UserServiceImpl implements UserService {
             user.setName(strings.get(1));
             //角色为教师
             user.setRoleId(2);
-            //默认密码000000
-            user.setPassword("000000");
+
             userDao.save(user);
         }
     }

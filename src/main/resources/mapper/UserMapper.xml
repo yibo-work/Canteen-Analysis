@@ -68,7 +68,7 @@
         <trim suffixOverrides=",">
             <if test="userNo != null">`user_no`,</if>
             <if test="name != null">`name`,</if>
-            <if test="password != null">`password`,</if>
+            `password`,
             <if test="phone != null">`phone`,</if>
             <if test="email != null">`email`,</if>
             <if test="roleId != null">`role_id`</if>
@@ -78,7 +78,8 @@
         <trim suffixOverrides=",">
             <if test="userNo != null">#{userNo},</if>
             <if test="name != null">#{name},</if>
-            <if test="password != null">#{password},</if>
+            <!--默认密码000000-->
+            '000000',
             <if test="phone != null">#{phone},</if>
             <if test="email != null">#{email},</if>
             <if test="roleId != null">#{roleId}</if>

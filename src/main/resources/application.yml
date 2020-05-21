@@ -15,8 +15,7 @@ server:
   servlet:
     session:
       # session过期时间 十分钟
-#      timeout: 600s
-      timeout: 60000s
+      timeout: 600s
 # mybatis
 mybatis:
   mapper-locations: classpath:/mapper/*.xml

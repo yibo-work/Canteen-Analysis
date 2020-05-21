@@ -184,6 +184,9 @@ public class ImportLogServiceImpl implements ImportLogService {
             HashMap<String, Object> studentNoMap = new HashMap<>(4);
             studentNoMap.put("studentNo", parameters.get("studentNo"));
             studentNoMap.put("createTime", parameters.get("createTime"));
+            studentNoMap.put("sex", parameters.get("sex"));
+            studentNoMap.put("schoolCode", parameters.get("schoolCode"));
+            studentNoMap.put("grade", parameters.get("grade"));
 
             if (ObjectUtil.isNotEmpty(parameters.get("studentNo"))) {
                 List<ImportLog> studentNoData = importLogDao.list(studentNoMap);
@@ -194,9 +197,6 @@ public class ImportLogServiceImpl implements ImportLogService {
                     Map<String, Object> studentMap = analysisStudentData(studentNoData);
                     studentNoAnalysis.put("situationList", studentMap.get("situationList"));
                     resultMap.put("studentNoAnalysis", studentNoAnalysis);
-
-                    //学生个人消费水平
-
 
                 }
             }
